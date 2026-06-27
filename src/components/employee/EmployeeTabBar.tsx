@@ -2,6 +2,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Home, PlusCircle, CalendarDays, History, Folder, LogOut } from 'lucide-react'
+import { signOut } from 'next-auth/react'
 import { cn } from '@/lib/utils'
 
 const tabs = [
@@ -10,7 +11,6 @@ const tabs = [
   { href: '/log', label: 'Log Time', icon: PlusCircle },
   { href: '/week', label: 'This Week', icon: CalendarDays },
   { href: '/history', label: 'History', icon: History },
-  { href: '/login', label: 'Sign Out', icon: LogOut }
 ]
 
 export default function EmployeeTabBar() {
@@ -31,6 +31,13 @@ export default function EmployeeTabBar() {
             </Link>
           )
         })}
+        <button
+          onClick={() => signOut({ callbackUrl: '/login' })}
+          className="flex flex-1 flex-col items-center justify-center gap-1 py-3 text-[11px] font-medium text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <LogOut className="h-5 w-5" />
+          Sign Out
+        </button>
       </div>
     </nav>
   )
