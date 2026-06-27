@@ -41,7 +41,7 @@ export default function EditUserForm({ user }: Props) {
 
   return (
     <div className="animate-fade-in max-w-lg">
-      <PageHeader title="Edit User" backhref="/users" />
+      <PageHeader title="Edit User" backHref="/users" />
       <Card>
         <CardContent className="pt-6">
           <form onSubmit={handleSubmit} className="space-y-5">
