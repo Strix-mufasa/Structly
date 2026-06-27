@@ -11,7 +11,7 @@ import { Avatar } from '@/components/shared'
 const navItems = [
   { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/users', label: 'Users', icon: Users },
-  { href: '/projects', label: 'Projects', icon: Folder },
+  { href: '/admin-projects', label: 'Projects', icon: Folder },
   { href: '/tasks', label: 'Tasks', icon: ListTodo },
   { href: '/entries', label: 'Time Entries', icon: Clock },
 ]
