@@ -1,11 +1,13 @@
 'use client'
+import { Suspense } from 'react'
 import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Eye, EyeOff, AlertCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label, Card, CardContent } from '@/components/ui/index'
-export default function SetPasswordPage() {
+
+function SetPasswordForm() {
   const router = useRouter()
   const token = useSearchParams().get('token')
   const [state, setState] = useState<'loading'|'invalid'|'ready'|'success'>('loading')
@@ -26,12 +28,12 @@ export default function SetPasswordPage() {
     if (password !== confirm) errs.confirm = 'Passwords do not match'
     if (Object.keys(errs).length) { setErrors(errs); return }
     setLoading(true)
-    const res = await fetch('/api/auth/set-password', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token, password }) })
-    if (res.ok) { setState('success'); setTimeout(() => router.push('/auth/login'), 1500) } else { setErrors({ form: 'This link has expired.' }); setLoading(false) }
+    const res = await fetch('/api/auth/set-password', {method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token, password }) })
+    if (res.ok) { setState('success'); setTimeout(() => router.push('/login'), 1500) } else { setErrors({ form: 'This link has expired.' }); setLoading(false) }
   }
-  if (state === 'loading') return <Card><CardContent className="pt-6 py-12 text-center"><div className="h-8 w-8 rounded-full border-4 border-brand border-t-transparent animate-spin mx-auto mb-4" /><p className="text-sm text-muted-foreground">Validating your link...</p></CardContent></Card>
+  if (state === 'loading') return <Card><CardContent className="pt-6 py-12 text-center"><p className="text-sm text-muted-foreground">Validating your link...</p></CardContent></Card>
   if (state === 'invalid') return <Card><CardContent className="pt-6 py-12 text-center"><AlertCircle className="h-10 w-10 text-destructive mx-auto mb-4" /><h2 className="font-semibold mb-2">Link expired</h2><p className="text-sm text-muted-foreground">Ask your administrator to resend the invitation.</p></CardContent></Card>
-  if (state === 'success') return <Card><CardContent className="pt-6 py-12 text-center"><div className="text-3xl mb-4">checkmark</div><h2 className="font-semibold mb-2">Account activated!</h2><p className="text-sm text-muted-foreground">Redirecting to login...</p></CardContent></Card>
+  if (state === 'success') return <Card><CardContent className="pt-6 py-12 text-center"><h2 className="font-semibold mb-2">Account activated!</h2><p className="text-sm text-muted-foreground">Redirecting to login...</p></CardContent></Card>
   return (
     <Card><CardContent className="pt-6">
       <div className="mb-6"><h2 className="text-xl font-bold">Set your password</h2><p className="text-sm text-muted-foreground mt-1">Create a password to activate your account</p></div>
@@ -48,3 +50,6 @@ export default function SetPasswordPage() {
   )
 }
 
+export default function SetPasswordPage() {
+  return <Suspense fallback={<div>Loading...</div>}><SetPasswordForm /></Suspense>
+}
