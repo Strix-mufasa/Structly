@@ -24,7 +24,7 @@ export default function CreateUserPage() {
   }
   return (
     <div className="animate-fade-in max-w-lg">
-      <PageHeader title="Add User" subtitle="They will receive an invitation email" backhref="/users" />
+      <PageHeader title="Add User" subtitle="They will receive an invitation email" backHref="/users" />
       <Card><CardContent className="pt-6">
         <form onSubmit={handleSubmit} className="space-y-5">
           <div className="space-y-1.5"><Label>Full Name</Label><Input placeholder="e.g. Anna Lindstrom" value={form.name} onChange={(e) => set('name', e.target.value)} error={errors.name} autoFocus /></div>
