@@ -1,7 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, PlusCircle, CalendarDays, History, Folder } from 'lucide-react'
+import { Home, PlusCircle, CalendarDays, History, Folder, LogOut } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const tabs = [
@@ -10,7 +10,7 @@ const tabs = [
   { href: '/log', label: 'Log Time', icon: PlusCircle },
   { href: '/week', label: 'This Week', icon: CalendarDays },
   { href: '/history', label: 'History', icon: History },
-  { href: '/login', lablel: 'Sign Out', icon: Home }
+  { href: '/login', label: 'Sign Out', icon: LogOut }
 ]
 
 export default function EmployeeTabBar() {
