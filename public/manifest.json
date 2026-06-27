@@ -1,0 +1,14 @@
+{
+  "name": "Structly — Time Registration",
+  "short_name": "Structly",
+  "description": "Simple, fast time registration for your team",
+  "start_url": "/app/dashboard",
+  "display": "standalone",
+  "background_color": "#f8f9ff",
+  "theme_color": "#4361EE",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

@@ -1,0 +1,66 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 230 100% 99%;
+    --foreground: 222 47% 7%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 7%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 7%;
+    --primary: 231 84% 59%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 230 20% 96%;
+    --secondary-foreground: 222 47% 7%;
+    --muted: 230 20% 96%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 230 20% 94%;
+    --accent-foreground: 222 47% 7%;
+    --destructive: 350 87% 55%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 231 84% 59%;
+    --radius: 0.75rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    -webkit-tap-highlight-color: transparent;
+  }
+  input[type='number']::-webkit-inner-spin-button,
+  input[type='number']::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type='number'] {
+    -moz-appearance: textfield;
+  }
+}
+
+@layer utilities {
+  .safe-bottom {
+    padding-bottom: max(16px, env(safe-area-inset-bottom));
+  }
+  .safe-top {
+    padding-top: max(16px, env(safe-area-inset-top));
+  }
+  .touch-target {
+    min-height: 48px;
+    min-width: 48px;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
