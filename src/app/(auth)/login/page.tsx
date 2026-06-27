@@ -19,7 +19,7 @@ export default function LoginPage() {
     const result = await signIn('credentials', { email: email.trim().toLowerCase(), password, redirect: false })
     if (result?.error) { setError(result.error === 'DISABLED' ? 'This account has been deactivated. Contact your administrator.' : 'Incorrect email or password.'); setLoading(false); return }
     const me = await (await fetch('/api/auth/me')).json()
-    router.push(me.role === 'ADMIN' ? '/admin/dashboard' : '/app/dashboard')
+    router.push(me.role === 'ADMIN' ? '/admin' : 'dashboard')
   }
   return (
     <Card><CardContent className="pt-6">
@@ -27,7 +27,7 @@ export default function LoginPage() {
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-1.5"><Label>Email</Label><Input type="email" placeholder="you@company.com" value={email} onChange={(e) => setEmail(e.target.value)} autoFocus /></div>
         <div className="space-y-1.5">
-          <div className="flex items-center justify-between"><Label>Password</Label><Link href="/auth/forgot-password" className="text-xs text-brand hover:underline">Forgot password?</Link></div>
+          <div className="flex items-center justify-between"><Label>Password</Label><Link href="/forgot-password" className="text-xs text-brand hover:underline">Forgot password?</Link></div>
           <div className="relative">
             <Input type={showPass ? 'text' : 'password'} placeholder="Ã¢â‚¬Â¢Ã¢â‚¬Â¢Ã¢â‚¬Â¢Ã¢â‚¬Â¢Ã¢â‚¬Â¢Ã¢â‚¬Â¢Ã¢â‚¬Â¢Ã¢â‚¬Â¢" value={password} onChange={(e) => setPassword(e.target.value)} className="pr-12" />
             <button type="button" onClick={() => setShowPass(!showPass)} className="absolute right-3 top-3.5 text-muted-foreground">
