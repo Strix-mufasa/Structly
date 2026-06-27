@@ -1,11 +1,12 @@
 'use client'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, PlusCircle, CalendarDays, History } from 'lucide-react'
+import { Home, PlusCircle, CalendarDays, History, Folder } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const tabs = [
   { href: '/dashboard', label: 'Home', icon: Home },
+  { href: '/projects', label: 'Projects', icon: Folder },
   { href: '/log', label: 'Log Time', icon: PlusCircle },
   { href: '/week', label: 'This Week', icon: CalendarDays },
   { href: '/history', label: 'History', icon: History },
