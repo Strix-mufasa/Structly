@@ -1,14 +1,17 @@
 'use client'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, Users, ListTodo, Clock, LogOut } from 'lucide-react'
+import { LayoutDashboard, Users, ListTodo, Clock, Folder, LogOut } from 'lucide-react'
 import { signOut } from 'next-auth/react'
 import { cn } from '@/lib/utils'
 import { Avatar } from '@/components/shared'
 
+
+
 const navItems = [
   { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/users', label: 'Users', icon: Users },
+  { href: '/projects', label: 'Projects', icon: Folder },
   { href: '/tasks', label: 'Tasks', icon: ListTodo },
   { href: '/entries', label: 'Time Entries', icon: Clock },
 ]
