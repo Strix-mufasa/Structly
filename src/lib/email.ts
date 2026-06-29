@@ -5,7 +5,7 @@ const FROM = process.env.RESEND_FROM_EMAIL ?? 'Structly <noreply@structly.app>'
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
 
 export async function sendInviteEmail(to: string, name: string, token: string) {
-  const link = `${APP_URL}/auth/set-password?token=${token}`
+  const link = `${APP_URL}/set-password?token=${token}`
 
   await resend.emails.send({
     from: FROM,
@@ -35,7 +35,7 @@ export async function sendInviteEmail(to: string, name: string, token: string) {
 }
 
 export async function sendPasswordResetEmail(to: string, name: string, token: string) {
-  const link = `${APP_URL}/auth/reset-password?token=${token}`
+  const link = `${APP_URL}/reset-password?token=${token}`
 
   await resend.emails.send({
     from: FROM,

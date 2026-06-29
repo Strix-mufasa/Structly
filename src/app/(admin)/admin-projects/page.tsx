@@ -8,21 +8,36 @@ import { useLang } from '@/lib/LanguageContext'
 export default function ProjectsPage() {
   const { t } = useLang()
   const [projects, setProjects] = useState<any[]>([])
+  const [users, setUsers] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [showModal, setShowModal] = useState(false)
-  const [form, setForm] = useState({ name: '', assignedTo: '', date: '', status: 'PUBLISHED' })
+  const [form, setForm] = useState({ name: '', assignedUserIds: [] as string[], date: '', status: 'PUBLISHED' })
 
   useEffect(() => {
     fetch('/api/admin/projects').then(r => r.json()).then(d => { setProjects(d); setLoading(false) })
+    fetch('/api/admin/users').then(r => r.json()).then(d => setUsers(d))
   }, [])
 
+  function toggleUser(userId: string) {
+    setForm(f => ({
+      ...f,
+      assignedUserIds: f.assignedUserIds.includes(userId)
+        ? f.assignedUserIds.filter(id => id !== userId)
+        : [...f.assignedUserIds, userId]
+    }))
+  }
+
   async function handleAdd() {
-    if (!form.name || !form.assignedTo || !form.date) return
-    const res = await fetch('/api/admin/projects', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(form) })
+    if (!form.name || form.assignedUserIds.length === 0 || !form.date) return
+    const res = await fetch('/api/admin/projects', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(form)
+    })
     const project = await res.json()
     setProjects([project, ...projects])
     setShowModal(false)
-    setForm({ name: '', assignedTo: '', date: '', status: 'PUBLISHED' })
+    setForm({ name: '', assignedUserIds: [], date: '', status: 'PUBLISHED' })
   }
 
   return (
@@ -40,7 +55,7 @@ export default function ProjectsPage() {
       <Card>
         <div className="hidden md:grid grid-cols-[1fr_1fr_120px_100px] gap-4 px-5 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wide border-b border-border">
           <span>{t.projectCol}</span>
-          <span>{t.assignedToCol}</span>
+          <span>{t.membersCol}</span>
           <span>{t.dateCol}</span>
           <span>{t.statusCol}</span>
         </div>
@@ -51,7 +66,9 @@ export default function ProjectsPage() {
             : projects.map(p => (
               <div key={p.id} className="grid grid-cols-1 md:grid-cols-[1fr_1fr_120px_100px] gap-2 md:gap-4 px-5 py-4 border-b border-border items-center">
                 <p className="text-sm font-medium">{p.name}</p>
-                <p className="text-sm text-muted-foreground">{p.assignedTo}</p>
+                <p className="text-sm text-muted-foreground">
+                  {p.members?.map((m: any) => m.user.name).join(', ') || '—'}
+                </p>
                 <p className="text-sm text-muted-foreground">
                   {new Date(p.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
                 </p>
@@ -74,10 +91,19 @@ export default function ProjectsPage() {
                 placeholder={t.projectNamePlaceholder} />
             </div>
             <div className="space-y-1.5">
-              <label className="text-sm font-medium">{t.assignedToCol}</label>
-              <input className="w-full border border-border rounded-xl px-3 py-2 text-sm bg-background"
-                value={form.assignedTo} onChange={e => setForm({...form, assignedTo: e.target.value})}
-                placeholder={t.assignedToPlaceholder} />
+              <label className="text-sm font-medium">{t.membersCol}</label>
+              <div className="border border-border rounded-xl px-3 py-2 space-y-2 max-h-40 overflow-y-auto">
+                {users.filter(u => u.role === 'EMPLOYEE' && u.status === 'ACTIVE').map(u => (
+                  <label key={u.id} className="flex items-center gap-2 text-sm cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={form.assignedUserIds.includes(u.id)}
+                      onChange={() => toggleUser(u.id)}
+                    />
+                    {u.name} <span className="text-muted-foreground text-xs">({u.email})</span>
+                  </label>
+                ))}
+              </div>
             </div>
             <div className="space-y-1.5">
               <label className="text-sm font-medium">{t.dateCol}</label>

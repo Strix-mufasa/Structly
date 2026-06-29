@@ -78,7 +78,8 @@ export default function EmployeeProjectsPage() {
               <CardContent className="py-4 px-4 flex items-center justify-between">
                 <div>
                   <p className="text-sm font-semibold">{p.name}</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">{p.assignedTo} · {new Date(p.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+                  {/* <p className="text-xs text-muted-foreground mt-0.5">{p.assignedTo} · {new Date(p.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</p> */}
+                  <p className="text-xs text-muted-foreground mt-0.5">{new Date(p.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
                 </div>
                 <Button size="sm" onClick={() => router.push(`/log?project=${p.id}`)}>
                   <Plus className="h-3.5 w-3.5 mr-1" /> {t.addEntry}

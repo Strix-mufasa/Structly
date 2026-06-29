@@ -94,6 +94,7 @@ export const translations = {
     projectNameLabel: 'Project Name',
     projectNamePlaceholder: 'e.g. Backend Development',
     assignedToPlaceholder: 'e.g. Anuj Sharma',
+    membersCol: 'Members',
     cancel: 'Cancel',
 
     // Admin Tasks page
@@ -210,6 +211,7 @@ export const translations = {
     projectNameLabel: 'Projektnamn',
     projectNamePlaceholder: 't.ex. Backend-utveckling',
     assignedToPlaceholder: 't.ex. Anuj Sharma',
+    membersCol: 'Medlemmar',
     cancel: 'Avbryt',
 
     // Admin Tasks page
