@@ -10,7 +10,6 @@ const tabs = [
   { href: '/projects', label: 'Projects', icon: Folder },
   { href: '/log', label: 'Log Time', icon: PlusCircle },
   { href: '/week', label: 'This Week', icon: CalendarDays },
-  { href: '/history', label: 'History', icon: History },
 ]
 
 export default function EmployeeTabBar() {
