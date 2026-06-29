@@ -1,23 +1,24 @@
 'use client'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, Users, ListTodo, Clock, Folder, LogOut } from 'lucide-react'
+import { LayoutDashboard, Users, ListTodo, Clock, Folder, LogOut, Globe } from 'lucide-react'
 import { signOut } from 'next-auth/react'
 import { cn } from '@/lib/utils'
 import { Avatar } from '@/components/shared'
-
-
-
-const navItems = [
-  { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/users', label: 'Users', icon: Users },
-  { href: '/admin-projects', label: 'Projects', icon: Folder },
-  { href: '/tasks', label: 'Tasks', icon: ListTodo },
-  { href: '/entries', label: 'Time Entries', icon: Clock },
-]
+import { useLang } from '@/lib/LanguageContext'
 
 export default function AdminSidebar({ user }: { user: { name: string; email: string } }) {
   const pathname = usePathname()
+  const { t, lang, toggleLang } = useLang()
+
+  const navItems = [
+    { href: '/admin', label: t.adminDashboard, icon: LayoutDashboard },
+    { href: '/users', label: t.adminUsers, icon: Users },
+    { href: '/admin-projects', label: t.adminProjects, icon: Folder },
+    { href: '/tasks', label: t.adminTasks, icon: ListTodo },
+    { href: '/entries', label: t.adminTimeEntries, icon: Clock },
+  ]
+
   return (
     <aside className="w-60 shrink-0 border-r border-border bg-card flex flex-col">
       <div className="flex items-center gap-3 px-5 py-5 border-b border-border">
@@ -26,7 +27,7 @@ export default function AdminSidebar({ user }: { user: { name: string; email: st
         </div>
         <div>
           <p className="font-bold text-sm text-foreground">Structly</p>
-          <p className="text-[11px] text-muted-foreground">Admin Panel</p>
+          <p className="text-[11px] text-muted-foreground">{t.adminPanel}</p>
         </div>
       </div>
       <nav className="flex-1 px-3 py-4 space-y-1">
@@ -44,7 +45,7 @@ export default function AdminSidebar({ user }: { user: { name: string; email: st
           )
         })}
       </nav>
-      <div className="px-3 py-4 border-t border-border">
+      <div className="px-3 py-4 border-t border-border space-y-1">
         <div className="flex items-center gap-3 px-3 py-2 mb-1">
           <Avatar name={user.name} size="sm" />
           <div className="min-w-0">
@@ -52,9 +53,13 @@ export default function AdminSidebar({ user }: { user: { name: string; email: st
             <p className="text-xs text-muted-foreground truncate">{user.email}</p>
           </div>
         </div>
+        <button onClick={toggleLang}
+          className="flex w-full items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors">
+          <Globe className="h-4 w-4" /> {lang === 'en' ? 'Svenska' : 'English'}
+        </button>
         <button onClick={() => signOut({ callbackUrl: '/login' })}
           className="flex w-full items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors">
-          <LogOut className="h-4 w-4" /> Sign out
+          <LogOut className="h-4 w-4" /> {t.signOut}
         </button>
       </div>
     </aside>

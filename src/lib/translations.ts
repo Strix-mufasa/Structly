@@ -22,8 +22,14 @@ export const translations = {
     logTimeAction: 'Log Time',
     viewThisWeek: 'View This Week',
     viewHistory: 'View History',
+    adminPanel: 'Admin Panel',
+    adminDashboard: 'Dashboard',
+    adminUsers: 'Users',
+    adminProjects: 'Projects',
+    adminTasks: 'Tasks',
+    adminTimeEntries: 'Time Entries',
 
-    // Projects page
+    // Projects page (employee side)
     projectsTitle: 'Projects',
     projectsSubtitle: 'All your submitted time entries',
     addEntry: 'Add Entry',
@@ -62,6 +68,52 @@ export const translations = {
     fri: 'Fri',
     sat: 'Sat',
     sun: 'Sun',
+
+    // Admin Dashboard page
+    welcomeBack: 'Welcome back',
+    addTask: 'Add Task',
+    addUser: 'Add User',
+    activeEmployees: 'Active Employees',
+    activeTasks: 'Active Tasks',
+    entriesThisWeek: 'Entries This Week',
+    hoursThisWeek: 'Hours This Week',
+    recentTimeEntries: 'Recent Time Entries',
+    viewAll: 'View all',
+    noEntriesYet: 'No entries yet.',
+
+    // Admin Projects page
+    adminProjectsTitle: 'Projects',
+    totalProjects: 'total projects',
+    addProject: 'Add Project',
+    projectCol: 'Project',
+    assignedToCol: 'Assigned To',
+    dateCol: 'Date',
+    statusCol: 'Status',
+    statusPublished: 'Published',
+    statusDraft: 'Draft',
+    projectNameLabel: 'Project Name',
+    projectNamePlaceholder: 'e.g. Backend Development',
+    assignedToPlaceholder: 'e.g. Anuj Sharma',
+    cancel: 'Cancel',
+
+    // Admin Tasks page
+    adminTasksTitle: 'Tasks',
+    activeLabel: 'active',
+    inactiveLabel: 'inactive',
+    noTasksYetTitle: 'No tasks yet',
+    noTasksYetDesc: 'Add your first task. Employees will select from these when logging time.',
+    taskNameCol: 'Task Name',
+    createdCol: 'Created',
+    actionsCol: 'Actions',
+
+    // Admin Users page
+    adminUsersTitle: 'Users',
+    totalAccounts: 'total accounts',
+    noUsersYetTitle: 'No users yet',
+    noUsersYetDesc: 'Add your first user to get started.',
+    nameCol: 'Name',
+    emailCol: 'Email',
+    roleCol: 'Role',
   },
   sv: {
     home: 'Hem',
@@ -86,8 +138,14 @@ export const translations = {
     logTimeAction: 'Logga tid',
     viewThisWeek: 'Visa denna vecka',
     viewHistory: 'Visa historik',
+    adminPanel: 'Adminpanel',
+    adminDashboard: 'Översikt',
+    adminUsers: 'Användare',
+    adminProjects: 'Projekt',
+    adminTasks: 'Uppgifter',
+    adminTimeEntries: 'Tidsposter',
 
-    // Projects page
+    // Projects page (employee side)
     projectsTitle: 'Projekt',
     projectsSubtitle: 'Alla dina inskickade tidsposter',
     addEntry: 'Lägg till post',
@@ -126,6 +184,52 @@ export const translations = {
     fri: 'Fre',
     sat: 'Lör',
     sun: 'Sön',
+
+    // Admin Dashboard page
+    welcomeBack: 'Välkommen tillbaka',
+    addTask: 'Lägg till uppgift',
+    addUser: 'Lägg till användare',
+    activeEmployees: 'Aktiva anställda',
+    activeTasks: 'Aktiva uppgifter',
+    entriesThisWeek: 'Poster denna vecka',
+    hoursThisWeek: 'Timmar denna vecka',
+    recentTimeEntries: 'Senaste tidsposter',
+    viewAll: 'Visa alla',
+    noEntriesYet: 'Inga poster ännu.',
+
+    // Admin Projects page
+    adminProjectsTitle: 'Projekt',
+    totalProjects: 'totala projekt',
+    addProject: 'Lägg till projekt',
+    projectCol: 'Projekt',
+    assignedToCol: 'Tilldelad till',
+    dateCol: 'Datum',
+    statusCol: 'Status',
+    statusPublished: 'Publicerad',
+    statusDraft: 'Utkast',
+    projectNameLabel: 'Projektnamn',
+    projectNamePlaceholder: 't.ex. Backend-utveckling',
+    assignedToPlaceholder: 't.ex. Anuj Sharma',
+    cancel: 'Avbryt',
+
+    // Admin Tasks page
+    adminTasksTitle: 'Uppgifter',
+    activeLabel: 'aktiva',
+    inactiveLabel: 'inaktiva',
+    noTasksYetTitle: 'Inga uppgifter ännu',
+    noTasksYetDesc: 'Lägg till din första uppgift. Anställda väljer bland dessa när de loggar tid.',
+    taskNameCol: 'Uppgiftsnamn',
+    createdCol: 'Skapad',
+    actionsCol: 'Åtgärder',
+
+    // Admin Users page
+    adminUsersTitle: 'Användare',
+    totalAccounts: 'totala konton',
+    noUsersYetTitle: 'Inga användare ännu',
+    noUsersYetDesc: 'Lägg till din första användare för att komma igång.',
+    nameCol: 'Namn',
+    emailCol: 'E-post',
+    roleCol: 'Roll',
   }
 }
 
