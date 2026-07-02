@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
   if (error) return error
 
   try {
-    const { name, email, role } = await req.json()
+    const { name, email, role, jobTitle } = await req.json()
 
     if (!name?.trim() || !email?.trim()) {
       return NextResponse.json({ error: 'MISSING_FIELDS' }, { status: 400 })
@@ -45,6 +45,7 @@ export async function POST(req: NextRequest) {
         name: name.trim(),
         email: email.toLowerCase().trim(),
         role: role === 'ADMIN' ? 'ADMIN' : 'EMPLOYEE',
+        jobTitle: jobTitle?.trim() || null,
         status: 'PENDING',
         inviteToken: token,
         inviteExpiry: expiry,
