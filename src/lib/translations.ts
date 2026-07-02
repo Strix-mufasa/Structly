@@ -142,7 +142,7 @@ export const translations = {
       financeManager: 'Finance Manager / CFO',
       byggYA: 'Construction Safety Officer (YA)',
       ueYA: 'Subcontractor Safety Officer (YA)',
-      myRole: 'My real role',
+      // myRole: 'My real role',
     },
   },
 
@@ -290,7 +290,7 @@ export const translations = {
       financeManager: 'Ekonomichef',
       byggYA: 'Bygg YA',
       ueYA: 'UE YA',
-      myRole: 'Min riktiga roll',
+      // myRole: 'Min riktiga roll',
     },
   }
 }

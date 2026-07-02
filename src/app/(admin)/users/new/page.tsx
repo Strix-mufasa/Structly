@@ -30,7 +30,7 @@ export default function CreateUserPage() {
     { en: 'Finance Manager / CFO', sv: 'Ekonomichef' },
     { en: 'Construction Safety Officer (YA)', sv: 'Bygg YA' },
     { en: 'Subcontractor Safety Officer (YA)', sv: 'UE YA' },
-    { en: 'My real role', sv: 'Min riktiga roll' },
+    // { en: 'My real role', sv: 'Min riktiga roll' },
   ]
 
   async function handleSubmit(e: React.FormEvent) {
