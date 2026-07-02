@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/index'
 import { Plus } from 'lucide-react'
 import { useLang } from '@/lib/LanguageContext'
+import { useRouter } from 'next/navigation'
 
 interface Component {
   id: string
@@ -14,6 +15,7 @@ interface Component {
 
 export default function ProjectsPage() {
   const { t } = useLang()
+  const router = useRouter()
   const [projects, setProjects] = useState<any[]>([])
   const [users, setUsers] = useState<any[]>([])
   const [components, setComponents] = useState<Component[]>([])
@@ -29,7 +31,6 @@ export default function ProjectsPage() {
     taskName: '',
     componentIds: [] as string[],
   })
-  // temp selection state while the component-picker modal is open
   const [tempComponentIds, setTempComponentIds] = useState<string[]>([])
 
   useEffect(() => {
@@ -48,7 +49,7 @@ export default function ProjectsPage() {
   }
 
   function openComponentPicker() {
-    setTempComponentIds(form.componentIds) // start picker with whatever's already selected
+    setTempComponentIds(form.componentIds)
     setShowComponentModal(true)
   }
 
@@ -78,12 +79,8 @@ export default function ProjectsPage() {
 
   const selectedComponentLabel = form.componentIds.length === 0
     ? ''
-    : components
-        .filter(c => form.componentIds.includes(c.id))
-        .map(c => c.name)
-        .join(', ')
+    : components.filter(c => form.componentIds.includes(c.id)).map(c => c.name).join(', ')
 
-  // Build a 10x10 grid: row = first digit of code, col = second digit
   const categoryRows = Array.from({ length: 10 }, (_, row) => {
     const rowComponents = components.filter(c => c.code.startsWith(String(row)))
     const categoryLabel = rowComponents[0]?.category ?? ''
@@ -118,7 +115,7 @@ export default function ProjectsPage() {
           : projects.length === 0
             ? <div className="py-12 text-center text-muted-foreground text-sm">{t.noProjects}</div>
             : projects.map(p => (
-              <div key={p.id} className="grid grid-cols-1 md:grid-cols-[1fr_1fr_120px_100px] gap-2 md:gap-4 px-5 py-4 border-b border-border items-center">
+              <div key={p.id} onClick={() => router.push(`/admin-projects/${p.id}`)} className="grid grid-cols-1 md:grid-cols-[1fr_1fr_120px_100px] gap-2 md:gap-4 px-5 py-4 border-b border-border items-center cursor-pointer hover:bg-muted/50 transition-colors">
                 <p className="text-sm font-medium">{p.name}</p>
                 <p className="text-sm text-muted-foreground">
                   {p.members?.map((m: any) => m.user.name).join(', ') || '—'}
@@ -139,36 +136,28 @@ export default function ProjectsPage() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-card rounded-2xl p-6 w-full max-w-md mx-4 space-y-4 max-h-[90vh] overflow-y-auto">
             <h2 className="text-lg font-bold">{t.addProject}</h2>
-
             <div className="space-y-1.5">
               <label className="text-sm font-medium">{t.projectNameLabel}</label>
               <input className="w-full border border-border rounded-xl px-3 py-2 text-sm bg-background"
                 value={form.name} onChange={e => setForm({...form, name: e.target.value})}
                 placeholder={t.projectNamePlaceholder} />
             </div>
-
             <div className="space-y-1.5">
               <label className="text-sm font-medium">{t.membersCol}</label>
               <div className="border border-border rounded-xl px-3 py-2 space-y-2 max-h-40 overflow-y-auto">
                 {users.filter(u => u.role === 'EMPLOYEE' && u.status === 'ACTIVE').map(u => (
                   <label key={u.id} className="flex items-center gap-2 text-sm cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={form.assignedUserIds.includes(u.id)}
-                      onChange={() => toggleUser(u.id)}
-                    />
+                    <input type="checkbox" checked={form.assignedUserIds.includes(u.id)} onChange={() => toggleUser(u.id)} />
                     {u.name} <span className="text-muted-foreground text-xs">({u.email})</span>
                   </label>
                 ))}
               </div>
             </div>
-
             <div className="space-y-1.5">
               <label className="text-sm font-medium">{t.dateCol}</label>
               <input type="date" className="w-full border border-border rounded-xl px-3 py-2 text-sm bg-background"
                 value={form.date} onChange={e => setForm({...form, date: e.target.value})} />
             </div>
-
             <div className="space-y-1.5">
               <label className="text-sm font-medium">{t.statusCol}</label>
               <select className="w-full border border-border rounded-xl px-3 py-2 text-sm bg-background"
@@ -177,39 +166,30 @@ export default function ProjectsPage() {
                 <option value="DRAFT">{t.statusDraft}</option>
               </select>
             </div>
-
-            {/* NEW: Zone */}
             <div className="space-y-1.5">
               <label className="text-sm font-medium">{t.zoneLabel || 'Zone'}</label>
               <input className="w-full border border-border rounded-xl px-3 py-2 text-sm bg-background"
                 value={form.zone} onChange={e => setForm({...form, zone: e.target.value})}
                 placeholder={t.zonePlaceholder || 'e.g. Z5 plan 3 Lgh 3001-3004'} />
             </div>
-
-            {/* NEW: Task Name */}
             <div className="space-y-1.5">
               <label className="text-sm font-medium">{t.taskNameLabel || 'Task Name'}</label>
               <input className="w-full border border-border rounded-xl px-3 py-2 text-sm bg-background"
                 value={form.taskName} onChange={e => setForm({...form, taskName: e.target.value})}
                 placeholder={t.taskNamePlaceholder || 'e.g. Site Cleanup'} />
             </div>
-
-            {/* NEW: Component picker */}
             <div className="space-y-1.5">
               <label className="text-sm font-medium">{t.componentLabel || 'Component'}</label>
               <div className="flex items-center gap-2">
-                <input
-                  readOnly
+                <input readOnly
                   className="flex-1 border border-border rounded-xl px-3 py-2 text-sm bg-background truncate"
                   value={selectedComponentLabel}
-                  placeholder={t.componentPlaceholder || 'Basic Constructions, Composite, .....'}
-                />
+                  placeholder={t.componentPlaceholder || 'Basic Constructions, Composite, .....'} />
                 <Button type="button" onClick={openComponentPicker} className="rounded-full px-4 text-xs">
                   {t.addButton || 'Add +'}
                 </Button>
               </div>
             </div>
-
             <div className="flex gap-3 pt-2">
               <Button onClick={handleAdd} className="flex-1">{t.addProject}</Button>
               <Button variant="outline" onClick={() => setShowModal(false)} className="flex-1">{t.cancel}</Button>
@@ -218,55 +198,74 @@ export default function ProjectsPage() {
         </div>
       )}
 
-      {/* Component Picker Modal (Image 4) */}
+      {/* Component Picker — Full Page */}
       {showComponentModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60]">
-          <div className="bg-card rounded-2xl p-6 w-full max-w-6xl mx-4 max-h-[90vh] overflow-auto">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-bold">
-                {t.projectsCol || 'Projects'} / {t.constructionComponents || 'Construction components'}
-              </h2>
+        <div className="fixed inset-0 bg-background z-[60] flex flex-col">
+          {/* Header */}
+          <div className="flex items-center justify-between px-8 py-4 border-b border-border shrink-0">
+            <div className="flex items-center gap-2 text-lg font-bold">
+              <span>{t.projectsCol || 'Projects'}</span>
+              <span className="text-muted-foreground font-normal">/</span>
+              <span className="font-normal text-muted-foreground">{t.constructionComponents || 'Construction components'}</span>
             </div>
+            <Button onClick={() => router.push('/admin-projects')}>
+              + {t.addProjects || 'Add Projects'}
+            </Button>
+          </div>
 
-            <table className="w-full border-collapse text-xs">
+          {/* Table */}
+          <div className="flex-1 overflow-auto px-8 py-6">
+            <table className="w-full border-collapse text-xs table-fixed">
               <tbody>
                 {categoryRows.map((row, rowIdx) => (
-                  <tr key={rowIdx} className="border-b border-border">
-                    <td className="align-top p-2 font-semibold w-40 whitespace-normal">
-                      {row.categoryLabel}
-                    </td>
-                    {row.cells.map((cell, colIdx) => (
-                      <td key={colIdx} className="align-top p-2 border-l border-border min-w-[90px]">
-                        {cell ? (
-                          <label className="flex items-start gap-1.5 cursor-pointer">
-                            <input
-                              type="checkbox"
-                              className="mt-0.5"
-                              checked={tempComponentIds.includes(cell.id)}
-                              onChange={() => toggleComponent(cell.id)}
-                            />
-                            <span>
-                              <span className="font-semibold">{cell.code}</span>
-                              <br />
-                              <span className="text-muted-foreground">{cell.name}</span>
-                            </span>
-                          </label>
-                        ) : null}
+                  row.categoryLabel ? (
+                    <tr key={rowIdx} className="border border-border">
+                      <td className="p-3 font-bold text-xs uppercase w-44 border-r border-border align-middle">
+                        {row.categoryLabel}
                       </td>
-                    ))}
-                  </tr>
+                      {row.cells.map((cell, colIdx) => (
+                        <td key={colIdx} className={`p-2 border-r border-border align-top ${cell && tempComponentIds.includes(cell.id) ? 'bg-primary/5' : ''}`}>
+                          {cell ? (
+                            <label className="flex items-start gap-1.5 cursor-pointer">
+                              <div className="mt-0.5 shrink-0">
+                                <input type="checkbox" className="sr-only"
+                                  checked={tempComponentIds.includes(cell.id)}
+                                  onChange={() => toggleComponent(cell.id)} />
+                                <div className={`h-4 w-4 rounded-full border-2 flex items-center justify-center transition-colors ${tempComponentIds.includes(cell.id) ? 'bg-primary border-primary' : 'border-muted-foreground/40'}`}>
+                                  {tempComponentIds.includes(cell.id) && (
+                                    <svg className="h-2.5 w-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                  )}
+                                </div>
+                              </div>
+                              <span>
+                                <span className="font-semibold">{cell.code}</span>
+                                <span className="text-muted-foreground ml-1 text-[10px]">%</span>
+                                <br />
+                                <span className="text-muted-foreground text-[11px] leading-tight">{cell.name}</span>
+                              </span>
+                            </label>
+                          ) : (
+                            <span className="text-muted-foreground/20 text-xs">{rowIdx}{colIdx}</span>
+                          )}
+                        </td>
+                      ))}
+                    </tr>
+                  ) : null
                 ))}
               </tbody>
             </table>
+          </div>
 
-            <div className="flex justify-end gap-3 pt-4">
-              <Button variant="outline" onClick={() => setShowComponentModal(false)}>
-                {t.cancel}
-              </Button>
-              <Button onClick={confirmComponents}>
-                {t.confirm || 'Confirm'}
-              </Button>
-            </div>
+          {/* Footer */}
+          <div className="flex justify-end gap-3 px-8 py-4 border-t border-border shrink-0">
+            <Button variant="outline" onClick={() => setShowComponentModal(false)}>
+              {t.cancel}
+            </Button>
+            <Button onClick={confirmComponents}>
+              {t.confirm || 'Confirm'}
+            </Button>
           </div>
         </div>
       )}

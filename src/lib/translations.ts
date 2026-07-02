@@ -129,6 +129,19 @@ export const translations = {
     constructionComponents: 'Construction components',
     confirm: 'Confirm',
 
+
+    // Project Detail page
+    activitiesPerComponent: 'Activities per construction component',
+    totalActivities: 'Total Activities',
+    uniqueZones: 'Unique Zones',
+    components: 'Components',
+    zoneCol: 'Zone',
+    componentCol: 'Component',
+    activityCol: 'Activity',
+    addProjects: 'Add Projects',
+    noActivitiesYet: 'No activities yet.',
+    noActivitiesDesc: 'Add a project with zone, component and task to get started.',
+
     // Add User page
     jobTitleLabel: 'Job Title',
     jobTitlePlaceholder: 'Select a job title',
@@ -276,6 +289,18 @@ export const translations = {
     projectsCol: 'Projekt',
     constructionComponents: 'Byggkomponenter',
     confirm: 'Bekräfta',
+
+    // Project Detail page
+    activitiesPerComponent: 'Aktiviteter per byggkomponent',
+    totalActivities: 'Totala aktiviteter',
+    uniqueZones: 'Unika zoner',
+    components: 'Komponenter',
+    zoneCol: 'Zon',
+    componentCol: 'Komponent',
+    activityCol: 'Aktivitet',
+    addProjects: 'Lägg till projekt',
+    noActivitiesYet: 'Inga aktiviteter än.',
+    noActivitiesDesc: 'Lägg till ett projekt med zon, komponent och uppgift för att börja.',
 
     // Add User page
     jobTitleLabel: 'Jobbtitel',
