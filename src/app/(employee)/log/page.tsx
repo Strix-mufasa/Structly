@@ -37,7 +37,6 @@ export default function LogTimePage() {
   const [currentUserId, setCurrentUserId] = useState('')
   const [form, setForm] = useState({
     date: format(new Date(), 'yyyy-MM-dd'),
-    taskId: '',
     hours: '',
     comment: '',
     componentActivityId: '',
@@ -48,19 +47,18 @@ export default function LogTimePage() {
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    fetch('/api/tasks').then(r => r.json()).then(setTasks)
-    fetch('/api/entries?date=today').then(r => r.json()).then(setTodayEntries)
     fetch('/api/projects').then(r => r.json()).then(d => {
       setProjects(d)
       if (d.length > 0) setSelectedProject(d[0])
     })
+    fetch('/api/tasks').then(r => r.json()).then(setTasks)
+    fetch('/api/entries?date=today').then(r => r.json()).then(setTodayEntries)
     fetch('/api/me').then(r => r.json()).then(d => {
       setCurrentUserId(d.id || '')
       setJobTitle(titleMap[d.jobTitle] || d.jobTitle || '')
     })
   }, [])
 
-  // Project change hone pe role update karo
   useEffect(() => {
     if (selectedProject && currentUserId) {
       const member = selectedProject.members?.find(m => m.userId === currentUserId)
@@ -89,7 +87,6 @@ export default function LogTimePage() {
     e.preventDefault()
     const errs: Record<string, string> = {}
     if (!form.date) errs.date = t.errorDateRequired
-    if (!form.taskId) errs.taskId = t.errorSelectTask
     if (!form.hours) errs.hours = t.errorHoursRequired
     const h = parseFloat(form.hours)
     if (isNaN(h) || h <= 0) errs.hours = t.errorHoursInvalid
@@ -101,7 +98,7 @@ export default function LogTimePage() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         date: form.date,
-        taskId: form.taskId,
+        taskId: tasks[0]?.id || '',
         hours: h,
         comment: form.comment,
         activityId: form.activityId || undefined,
@@ -114,7 +111,7 @@ export default function LogTimePage() {
       const entry = await res.json()
       setTodayEntries(prev => [entry, ...prev])
       toast(`${t.entrySavedToast} ${format(new Date(form.date + 'T12:00:00'), 'dd MMM')}.`, 'success')
-      setForm({ date: format(new Date(), 'yyyy-MM-dd'), taskId: '', hours: '', comment: '', componentActivityId: '', activityId: '', zoneId: '' })
+      setForm({ date: format(new Date(), 'yyyy-MM-dd'), hours: '', comment: '', componentActivityId: '', activityId: '', zoneId: '' })
     } else {
       toast(t.entrySaveFailed, 'error')
     }
@@ -134,51 +131,38 @@ export default function LogTimePage() {
             <p className="text-xs text-muted-foreground mb-5">Fill in the details below and click Save Entry when done.</p>
             <form onSubmit={handleSubmit} className="space-y-5">
 
-              
+              {/* Project */}
+              {projects.length > 0 && (
+                <div className="space-y-1.5">
+                  <Label>Project</Label>
+                  <Select value={selectedProject?.id || ''} onValueChange={handleProjectChange}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select project" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {projects.map(p => (
+                        <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
 
-              {/* Role */}
+              {/* Construction Component */}
               <div className="space-y-1.5">
-                <Label>Role</Label>
-                <div className="flex items-center justify-between border border-border rounded-xl px-4 py-3 text-sm cursor-pointer hover:bg-muted/30 transition-colors">
-                  <span className={jobTitle ? 'text-foreground' : 'text-muted-foreground'}>
-                    {jobTitle || 'Select role'}
-                  </span>
-                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                </div>
-              </div>
-
-              {/* Construction Component + Activity */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <Label>Construction Component</Label>
-                  <Select value={form.componentActivityId} onValueChange={v => set('componentActivityId', v)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select component" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {activities.map(a => (
-                        <SelectItem key={a.id} value={a.id}>
-                          {a.component?.code} - {a.component?.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-1.5">
-                  <Label>Activity</Label>
-                  <Select value={form.activityId} onValueChange={v => set('activityId', v)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select activity" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {activities.map(a => (
-                        <SelectItem key={a.id} value={a.id}>
-                          {a.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+                <Label>Construction Component</Label>
+                <Select value={form.componentActivityId} onValueChange={v => set('componentActivityId', v)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select component" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {activities.map(a => (
+                      <SelectItem key={a.id} value={a.id}>
+                        {a.component?.code} - {a.component?.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               {/* Zone */}
@@ -198,6 +182,23 @@ export default function LogTimePage() {
                 </Select>
               </div>
 
+              {/* Activity */}
+              <div className="space-y-1.5">
+                <Label>Activity</Label>
+                <Select value={form.activityId} onValueChange={v => set('activityId', v)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select activity" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {activities.map(a => (
+                      <SelectItem key={a.id} value={a.id}>
+                        {a.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
               {/* Date */}
               <div className="space-y-1.5">
                 <Label>{t.dateLabel}</Label>
@@ -206,19 +207,6 @@ export default function LogTimePage() {
                     max={format(new Date(), 'yyyy-MM-dd')} error={errors.date} className="pl-10" />
                   <CalendarDays className="absolute left-3 top-3.5 h-4 w-4 text-muted-foreground pointer-events-none" />
                 </div>
-              </div>
-
-              {/* Task */}
-              <div className="space-y-1.5">
-                <Label>{t.taskLabel}</Label>
-                {tasks.length === 0
-                  ? <div className="rounded-xl border border-input px-4 py-3 text-sm text-muted-foreground">{t.noTasksAvailable}</div>
-                  : (
-                    <Select value={form.taskId} onValueChange={v => set('taskId', v)}>
-                      <SelectTrigger error={errors.taskId}><SelectValue placeholder={t.selectTask} /></SelectTrigger>
-                      <SelectContent>{tasks.map(task => <SelectItem key={task.id} value={task.id}>{task.name}</SelectItem>)}</SelectContent>
-                    </Select>
-                  )}
               </div>
 
               {/* Hours */}
@@ -275,7 +263,7 @@ export default function LogTimePage() {
               <div className="space-y-2">
                 {tasks.map(task => (
                   <div key={task.id} className="flex items-center gap-2 py-1.5 cursor-pointer hover:bg-muted/30 rounded-lg px-2 transition-colors"
-                    onClick={() => set('taskId', task.id)}>
+                    onClick={() => set('activityId', task.id)}>
                     <span className="h-2 w-2 rounded-full bg-green-400 shrink-0" />
                     <span className="text-sm">{task.name}</span>
                   </div>
