@@ -148,6 +148,23 @@ export default function LogTimePage() {
                 </div>
               )}
 
+              {/* Zone */}
+              <div className="space-y-1.5">
+                <Label>Zone</Label>
+                <Select value={form.zoneId} onValueChange={v => set('zoneId', v)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select zone" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {zones.map(z => (
+                      <SelectItem key={z.id} value={z.id}>
+                        {z.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
               {/* Construction Component */}
               <div className="space-y-1.5">
                 <Label>Construction Component</Label>
@@ -165,22 +182,7 @@ export default function LogTimePage() {
                 </Select>
               </div>
 
-              {/* Zone */}
-              <div className="space-y-1.5">
-                <Label>Zone</Label>
-                <Select value={form.zoneId} onValueChange={v => set('zoneId', v)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select zone" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {zones.map(z => (
-                      <SelectItem key={z.id} value={z.id}>
-                        {z.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+              
 
               {/* Activity */}
               <div className="space-y-1.5">

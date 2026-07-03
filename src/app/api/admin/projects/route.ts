@@ -19,15 +19,18 @@ export async function GET() {
 export async function POST(req: Request) {
   const session = await auth()
   if (!session || session.user.role !== 'ADMIN') return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  const { name, assignedUserIds, memberRoles, date, status, zone, taskName, componentIds } = await req.json()
-  if (!name || !Array.isArray(assignedUserIds) || assignedUserIds.length === 0 || !date) {
-    return NextResponse.json({ error: 'Missing fields' }, { status: 400 })
-  }
-  const ids: string[] = Array.isArray(componentIds) ? componentIds : []
-  const roles: Record<string, string> = memberRoles || {}
 
-  const project = await prisma.$transaction(async (tx) => {
-    const createdProject = await tx.project.create({
+  try {
+    const { name, assignedUserIds, memberRoles, date, status, zone, taskName, componentIds } = await req.json()
+    if (!name || !Array.isArray(assignedUserIds) || assignedUserIds.length === 0 || !date) {
+      return NextResponse.json({ error: 'Missing fields' }, { status: 400 })
+    }
+
+    const ids: string[] = Array.isArray(componentIds) ? componentIds : []
+    const roles: Record<string, string> = memberRoles || {}
+
+    
+    const createdProject = await prisma.project.create({
       data: {
         name,
         date: new Date(date),
@@ -41,15 +44,17 @@ export async function POST(req: Request) {
       },
     })
 
+    
     let createdZone = null
     if (zone) {
-      createdZone = await tx.zone.create({
+      createdZone = await prisma.zone.create({
         data: { name: zone, projectId: createdProject.id },
       })
     }
 
+    
     if (ids.length > 0) {
-      await tx.projectComponent.createMany({
+      await prisma.projectComponent.createMany({
         data: ids.map((componentId) => ({
           projectId: createdProject.id,
           componentId,
@@ -57,8 +62,9 @@ export async function POST(req: Request) {
       })
     }
 
+    
     if (taskName && createdZone && ids.length > 0) {
-      await tx.activity.createMany({
+      await prisma.activity.createMany({
         data: ids.map((componentId) => ({
           name: taskName,
           zoneId: createdZone!.id,
@@ -68,7 +74,8 @@ export async function POST(req: Request) {
       })
     }
 
-    return tx.project.findUniqueOrThrow({
+    
+    const project = await prisma.project.findUniqueOrThrow({
       where: { id: createdProject.id },
       include: {
         members: { include: { user: { select: { id: true, name: true, email: true } } } },
@@ -76,6 +83,10 @@ export async function POST(req: Request) {
         projectComponents: { include: { component: true } },
       },
     })
-  })
-  return NextResponse.json(project)
+
+    return NextResponse.json(project)
+  } catch (err) {
+    console.error('[admin/projects POST]', err)
+    return NextResponse.json({ error: 'Server error' }, { status: 500 })
+  }
 }
