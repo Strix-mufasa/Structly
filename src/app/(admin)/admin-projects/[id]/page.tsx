@@ -1,8 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { Button } from '@/components/ui/button'
-import { ChevronRight, Plus, Layers, MapPin, Zap } from 'lucide-react'
+import { ChevronRight, Layers, MapPin, Zap } from 'lucide-react'
 import { useLang } from '@/lib/LanguageContext'
 
 export default function ProjectDetailPage() {
@@ -61,20 +60,17 @@ export default function ProjectDetailPage() {
             </p>
           </div>
         </div>
-        <Button onClick={() => router.push('/admin-projects')}>
-          <Plus className="h-4 w-4 mr-1" /> {t.addProjects}
-        </Button>
+        <span className={`text-xs font-medium px-3 py-1.5 rounded-full ${project.status === 'PUBLISHED' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
+          {project.status === 'PUBLISHED' ? t.statusPublished : t.statusDraft}
+        </span>
       </div>
 
       {/* Stats Row */}
       <div className="grid grid-cols-3 gap-4">
         {[
-          { label: t.totalActivities, value: project.activities?.length || 0, icon: Zap, color: 'text-blue-500 bg-blue-500/10' },
-        //   { label: t.uniqueZones, value: [...new Set(project.activities?.map((a: any) => a.zone?.name))].filter(Boolean).length, icon: MapPin, color: 'text-green-500 bg-green-500/10' },
-        //   { label: t.components, value: [...new Set(project.activities?.map((a: any) => a.component?.name))].filter(Boolean).length, icon: Layers, color: 'text-purple-500 bg-purple-500/10' },
-            { label: t.uniqueZones, value: Array.from(new Set(project.activities?.map((a: any) => a.zone?.name))).filter(Boolean).length, icon: MapPin, color: 'text-green-500 bg-green-500/10' },
-            { label: t.components, value: Array.from(new Set(project.activities?.map((a: any) => a.component?.name))).filter(Boolean).length, icon: Layers, color: 'text-purple-500 bg-purple-500/10' },
-                
+          { label: 'Zone', value: Array.from(new Set(project.activities?.map((a: any) => a.zone?.name))).filter(Boolean).length, icon: MapPin, color: 'text-green-500 bg-green-500/10' },
+          { label: 'Component', value: Array.from(new Set(project.activities?.map((a: any) => a.component?.name))).filter(Boolean).length, icon: Layers, color: 'text-purple-500 bg-purple-500/10' },
+          { label: 'Activity', value: project.activities?.length || 0, icon: Zap, color: 'text-blue-500 bg-blue-500/10' },
         ].map((stat, i) => (
           <div key={i} className="rounded-2xl border border-border bg-card p-4 flex items-center gap-3">
             <div className={`h-9 w-9 rounded-xl flex items-center justify-center ${stat.color}`}>
@@ -111,10 +107,7 @@ export default function ProjectDetailPage() {
         )}
 
         {project.activities?.map((a: any, idx: number) => (
-          <div
-            key={a.id}
-            className={`grid grid-cols-3 gap-4 px-6 py-4 items-center border-b border-border last:border-0 hover:bg-muted/30 transition-colors ${idx % 2 === 0 ? '' : 'bg-muted/10'}`}
-          >
+          <div key={a.id} className={`grid grid-cols-3 gap-4 px-6 py-4 items-center border-b border-border last:border-0 hover:bg-muted/30 transition-colors ${idx % 2 === 0 ? '' : 'bg-muted/10'}`}>
             <div className="flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-blue-400 shrink-0" />
               <span className="text-sm font-medium">{a.zone?.name || '—'}</span>
