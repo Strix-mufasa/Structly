@@ -1,5 +1,4 @@
 'use client'
-
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
@@ -8,17 +7,31 @@ import { Label, Select, SelectTrigger, SelectValue, SelectContent, SelectItem, C
 import { PageHeader } from '@/components/shared'
 import { useToast } from '@/components/ui/toaster'
 import { Role, UserStatus } from '@/types'
+import { useLang } from '@/lib/LanguageContext'
 
 interface Props {
-  user: { id: string; name: string; email: string; role: Role; status: UserStatus }
+  user: { id: string; name: string; email: string; role: Role; status: UserStatus; jobTitle: string | null }
 }
+
+const jobTitleOptions = [
+  { value: 'siteManager', label: 'Site Manager' },
+  { value: 'foreman', label: 'Foreman / Work Supervisor' },
+  { value: 'projectManager', label: 'Project Manager' },
+  { value: 'designManager', label: 'Design Manager / Engineering Lead' },
+  { value: 'purchaser', label: 'Purchaser / Procurement Officer' },
+  { value: 'financeManager', label: 'Finance Manager / CFO' },
+  { value: 'byggYA', label: 'Construction Safety Officer (YA)' },
+  { value: 'ueYA', label: 'Subcontractor Safety Officer (YA)' },
+]
 
 export default function EditUserForm({ user }: Props) {
   const router = useRouter()
   const { toast } = useToast()
+  const { t } = useLang()
   const [loading, setLoading] = useState(false)
   const [name, setName] = useState(user.name)
   const [role, setRole] = useState(user.role)
+  const [jobTitle, setJobTitle] = useState(user.jobTitle || '')
   const [error, setError] = useState('')
 
   async function handleSubmit(e: React.FormEvent) {
@@ -28,12 +41,12 @@ export default function EditUserForm({ user }: Props) {
     const res = await fetch(`/api/admin/users/${user.id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: name.trim(), role }),
+      body: JSON.stringify({ name: name.trim(), role, jobTitle }),
     })
     setLoading(false)
     if (res.ok) {
       toast('User updated successfully.', 'success')
-      router.push('/admin/users')
+      router.push('/users')
     } else {
       setError('Failed to update user.')
     }
@@ -55,12 +68,23 @@ export default function EditUserForm({ user }: Props) {
               <p className="text-xs text-muted-foreground">Email cannot be changed</p>
             </div>
             <div className="space-y-1.5">
-              <Label>Role</Label>
+              <Label>{t.roleLabel || 'Role'}</Label>
               <Select value={role} onValueChange={(v) => setRole(v as Role)}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="EMPLOYEE">Employee</SelectItem>
                   <SelectItem value="ADMIN">Admin</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label>{t.jobTitleLabel || 'Job Title'}</Label>
+              <Select value={jobTitle} onValueChange={setJobTitle}>
+                <SelectTrigger><SelectValue placeholder={t.jobTitlePlaceholder || 'Select a job title'} /></SelectTrigger>
+                <SelectContent>
+                  {jobTitleOptions.map(opt => (
+                    <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -75,4 +99,3 @@ export default function EditUserForm({ user }: Props) {
     </div>
   )
 }
-

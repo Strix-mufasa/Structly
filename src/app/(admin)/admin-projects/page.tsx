@@ -13,6 +13,17 @@ interface Component {
   category: string
 }
 
+const jobTitleOptions = [
+  { value: 'siteManager', label: 'Site Manager' },
+  { value: 'foreman', label: 'Foreman / Work Supervisor' },
+  { value: 'projectManager', label: 'Project Manager' },
+  { value: 'designManager', label: 'Design Manager / Engineering Lead' },
+  { value: 'purchaser', label: 'Purchaser / Procurement Officer' },
+  { value: 'financeManager', label: 'Finance Manager / CFO' },
+  { value: 'byggYA', label: 'Construction Safety Officer (YA)' },
+  { value: 'ueYA', label: 'Subcontractor Safety Officer (YA)' },
+]
+
 export default function ProjectsPage() {
   const { t } = useLang()
   const router = useRouter()
@@ -25,6 +36,7 @@ export default function ProjectsPage() {
   const [form, setForm] = useState({
     name: '',
     assignedUserIds: [] as string[],
+    memberRoles: {} as Record<string, string>,
     date: '',
     status: 'PUBLISHED',
     zone: '',
@@ -46,6 +58,10 @@ export default function ProjectsPage() {
         ? f.assignedUserIds.filter(id => id !== userId)
         : [...f.assignedUserIds, userId]
     }))
+  }
+
+  function setMemberRole(userId: string, role: string) {
+    setForm(f => ({ ...f, memberRoles: { ...f.memberRoles, [userId]: role } }))
   }
 
   function openComponentPicker() {
@@ -74,7 +90,7 @@ export default function ProjectsPage() {
     const project = await res.json()
     setProjects([project, ...projects])
     setShowModal(false)
-    setForm({ name: '', assignedUserIds: [], date: '', status: 'PUBLISHED', zone: '', taskName: '', componentIds: [] })
+    setForm({ name: '', assignedUserIds: [], memberRoles: {}, date: '', status: 'PUBLISHED', zone: '', taskName: '', componentIds: [] })
   }
 
   const selectedComponentLabel = form.componentIds.length === 0
@@ -142,17 +158,34 @@ export default function ProjectsPage() {
                 value={form.name} onChange={e => setForm({...form, name: e.target.value})}
                 placeholder={t.projectNamePlaceholder} />
             </div>
+
+            {/* Members + Role */}
             <div className="space-y-1.5">
               <label className="text-sm font-medium">{t.membersCol}</label>
-              <div className="border border-border rounded-xl px-3 py-2 space-y-2 max-h-40 overflow-y-auto">
+              <div className="border border-border rounded-xl px-3 py-2 space-y-3 max-h-52 overflow-y-auto">
                 {users.filter(u => u.role === 'EMPLOYEE' && u.status === 'ACTIVE').map(u => (
-                  <label key={u.id} className="flex items-center gap-2 text-sm cursor-pointer">
-                    <input type="checkbox" checked={form.assignedUserIds.includes(u.id)} onChange={() => toggleUser(u.id)} />
-                    {u.name} <span className="text-muted-foreground text-xs">({u.email})</span>
-                  </label>
+                  <div key={u.id} className="space-y-1.5">
+                    <label className="flex items-center gap-2 text-sm cursor-pointer">
+                      <input type="checkbox" checked={form.assignedUserIds.includes(u.id)} onChange={() => toggleUser(u.id)} />
+                      {u.name} <span className="text-muted-foreground text-xs">({u.email})</span>
+                    </label>
+                    {form.assignedUserIds.includes(u.id) && (
+                      <select
+                        className="w-full border border-border rounded-lg px-2 py-1 text-xs bg-background ml-5"
+                        value={form.memberRoles[u.id] || ''}
+                        onChange={e => setMemberRole(u.id, e.target.value)}
+                      >
+                        <option value="">Select role...</option>
+                        {jobTitleOptions.map(opt => (
+                          <option key={opt.value} value={opt.value}>{opt.label}</option>
+                        ))}
+                      </select>
+                    )}
+                  </div>
                 ))}
               </div>
             </div>
+
             <div className="space-y-1.5">
               <label className="text-sm font-medium">{t.dateCol}</label>
               <input type="date" className="w-full border border-border rounded-xl px-3 py-2 text-sm bg-background"
@@ -201,7 +234,6 @@ export default function ProjectsPage() {
       {/* Component Picker — Full Page */}
       {showComponentModal && (
         <div className="fixed inset-0 bg-background z-[60] flex flex-col">
-          {/* Header */}
           <div className="flex items-center justify-between px-8 py-4 border-b border-border shrink-0">
             <div className="flex items-center gap-2 text-lg font-bold">
               <span>{t.projectsCol || 'Projects'}</span>
@@ -212,8 +244,6 @@ export default function ProjectsPage() {
               + {t.addProjects || 'Add Projects'}
             </Button>
           </div>
-
-          {/* Table */}
           <div className="flex-1 overflow-auto px-8 py-6">
             <table className="w-full border-collapse text-xs table-fixed">
               <tbody>
@@ -257,8 +287,6 @@ export default function ProjectsPage() {
               </tbody>
             </table>
           </div>
-
-          {/* Footer */}
           <div className="flex justify-end gap-3 px-8 py-4 border-t border-border shrink-0">
             <Button variant="outline" onClick={() => setShowComponentModal(false)}>
               {t.cancel}

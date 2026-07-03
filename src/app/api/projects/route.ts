@@ -11,7 +11,18 @@ export async function GET() {
       members: { some: { userId: session.user.id } },
     },
     orderBy: { createdAt: 'desc' },
-    include: { members: { include: { user: { select: { id: true, name: true, email: true } } } } },
+    include: {
+      members: {
+        select: {
+          id: true,
+          userId: true,
+          role: true,
+          user: { select: { id: true, name: true, email: true } }
+        }
+      },
+      activities: { include: { zone: true, component: true } },
+      zones: true,
+    },
   })
   return NextResponse.json(projects)
 }
@@ -30,7 +41,18 @@ export async function POST(req: Request) {
       status: status || 'DRAFT',
       members: { create: assignedUserIds.map((userId: string) => ({ userId })) },
     },
-    include: { members: { include: { user: { select: { id: true, name: true, email: true } } } } },
+    include: {
+      members: {
+        select: {
+          id: true,
+          userId: true,
+          role: true,
+          user: { select: { id: true, name: true, email: true } }
+        }
+      },
+      activities: { include: { zone: true, component: true } },
+      zones: true,
+    },
   })
   return NextResponse.json(project)
 }
