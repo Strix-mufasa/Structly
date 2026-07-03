@@ -83,24 +83,20 @@ export default function ProjectsPage() {
     setActivityRows([{ zone: '', componentIds: [], activityName: '' }])
     setShowModal(true)
   }
-
   async function handlePublish(statusVal: string) {
-    if (!step1.name || step1.assignedUserIds.length === 0 || !step1.date) return
-    const firstRow = activityRows[0]
-    const res = await fetch('/api/admin/projects', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name: step1.name,
-        assignedUserIds: step1.assignedUserIds,
-        memberRoles: {},
-        date: step1.date,
-        status: statusVal,
-        zone: firstRow.zone,
-        taskName: firstRow.activityName,
-        componentIds: firstRow.componentIds,
+      if (!step1.name || step1.assignedUserIds.length === 0 || !step1.date) return
+      const res = await fetch('/api/admin/projects', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: step1.name,
+          assignedUserIds: step1.assignedUserIds,
+          memberRoles: {},
+          date: step1.date,
+          status: statusVal,
+          activityRows: activityRows,
+        })
       })
-    })
     if (!res.ok) { console.error('Error:', await res.text()); return }
     const project = await res.json()
     setProjects([project, ...projects])

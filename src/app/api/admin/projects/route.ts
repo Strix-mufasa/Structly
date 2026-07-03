@@ -21,15 +21,14 @@ export async function POST(req: Request) {
   if (!session || session.user.role !== 'ADMIN') return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   try {
-    const { name, assignedUserIds, memberRoles, date, status, zone, taskName, componentIds } = await req.json()
+    const { name, assignedUserIds, memberRoles, date, status, activityRows } = await req.json()
     if (!name || !Array.isArray(assignedUserIds) || assignedUserIds.length === 0 || !date) {
       return NextResponse.json({ error: 'Missing fields' }, { status: 400 })
     }
 
-    const ids: string[] = Array.isArray(componentIds) ? componentIds : []
     const roles: Record<string, string> = memberRoles || {}
 
-    
+    // Step 1 - Project banao
     const createdProject = await prisma.project.create({
       data: {
         name,
@@ -44,37 +43,45 @@ export async function POST(req: Request) {
       },
     })
 
-    
-    let createdZone = null
-    if (zone) {
-      createdZone = await prisma.zone.create({
-        data: { name: zone, projectId: createdProject.id },
-      })
+    // Step 2 - Saari rows process karo
+    const rows = Array.isArray(activityRows) ? activityRows : []
+
+    for (const row of rows) {
+      const ids: string[] = Array.isArray(row.componentIds) ? row.componentIds : []
+
+      // Zone banao
+      let createdZone = null
+      if (row.zone) {
+        createdZone = await prisma.zone.create({
+          data: { name: row.zone, projectId: createdProject.id },
+        })
+      }
+
+      // Components link karo
+      if (ids.length > 0) {
+        await prisma.projectComponent.createMany({
+          data: ids.map((componentId: string) => ({
+            projectId: createdProject.id,
+            componentId,
+          })),
+          skipDuplicates: true,
+        })
+      }
+
+      // Activities banao
+      if (row.activityName && createdZone && ids.length > 0) {
+        await prisma.activity.createMany({
+          data: ids.map((componentId: string) => ({
+            name: row.activityName,
+            zoneId: createdZone!.id,
+            componentId,
+            projectId: createdProject.id,
+          })),
+        })
+      }
     }
 
-    
-    if (ids.length > 0) {
-      await prisma.projectComponent.createMany({
-        data: ids.map((componentId) => ({
-          projectId: createdProject.id,
-          componentId,
-        })),
-      })
-    }
-
-    
-    if (taskName && createdZone && ids.length > 0) {
-      await prisma.activity.createMany({
-        data: ids.map((componentId) => ({
-          name: taskName,
-          zoneId: createdZone!.id,
-          componentId,
-          projectId: createdProject.id,
-        })),
-      })
-    }
-
-    
+    // Final project return karo
     const project = await prisma.project.findUniqueOrThrow({
       where: { id: createdProject.id },
       include: {
