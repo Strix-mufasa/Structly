@@ -1,7 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, PlusCircle, CalendarDays, Folder, LogOut, Globe } from 'lucide-react'
+import { Home, PlusCircle, CalendarDays, LogOut, Globe } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { signOut } from 'next-auth/react'
 import { useLang } from '@/lib/LanguageContext'
@@ -12,7 +12,6 @@ export default function EmployeeSidebar() {
 
   const tabs = [
     { href: '/dashboard', label: t.home, icon: Home },
-    { href: '/projects', label: t.projects, icon: Folder },
     { href: '/log', label: t.logTime, icon: PlusCircle },
     { href: '/week', label: t.thisWeek, icon: CalendarDays },
   ]

@@ -1,0 +1,111 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String        @id @default(cuid())
+  name         String
+  email        String        @unique
+  passwordHash String?
+  role         String        @default("EMPLOYEE")
+  status       String        @default("PENDING")
+  jobTitle     String?
+  createdAt    DateTime      @default(now())
+  timeEntries  TimeEntry[]
+  projectMembers ProjectMember[]
+}
+
+model Task {
+  id          String      @id @default(cuid())
+  name        String
+  description String?
+  status      String      @default("ACTIVE")
+  createdAt   DateTime    @default(now())
+  timeEntries TimeEntry[]
+}
+
+model Project {
+  id                String             @id @default(cuid())
+  name              String
+  date              DateTime
+  status            String             @default("DRAFT")
+  createdAt         DateTime           @default(now())
+  members           ProjectMember[]
+  zones             Zone[]
+  activities        Activity[]
+  projectComponents ProjectComponent[]
+  timeEntries       TimeEntry[]
+}
+
+model ProjectMember {
+  id        String   @id @default(cuid())
+  projectId String
+  userId    String
+  role      String?
+  createdAt DateTime @default(now())
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Zone {
+  id         String     @id @default(cuid())
+  name       String
+  projectId  String
+  createdAt  DateTime   @default(now())
+  project    Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  activities Activity[]
+}
+
+model Component {
+  id                String             @id @default(cuid())
+  code              String             @unique
+  name              String
+  category          String
+  createdAt         DateTime           @default(now())
+  activities        Activity[]
+  projectComponents ProjectComponent[]
+}
+
+model ProjectComponent {
+  id          String    @id @default(cuid())
+  projectId   String
+  componentId String
+  createdAt   DateTime  @default(now())
+  project     Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  component   Component @relation(fields: [componentId], references: [id])
+}
+
+model Activity {
+  id          String      @id @default(cuid())
+  name        String
+  projectId   String
+  zoneId      String
+  componentId String
+  createdAt   DateTime    @default(now())
+  project     Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  zone        Zone        @relation(fields: [zoneId], references: [id])
+  component   Component   @relation(fields: [componentId], references: [id])
+  timeEntries TimeEntry[]
+}
+
+model TimeEntry {
+  id                String    @id @default(cuid())
+  userId            String
+  taskId            String
+  activityId        String?
+  projectId         String?
+  date              DateTime
+  hours             Decimal   @db.Decimal(5, 2)
+  comment           String?
+  wastedHoursReason String?
+  createdAt         DateTime  @default(now())
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  task              Task      @relation(fields: [taskId], references: [id])
+  activity          Activity? @relation(fields: [activityId], references: [id])
+  project           Project?  @relation(fields: [projectId], references: [id])
+}

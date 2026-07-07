@@ -7,20 +7,140 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Role {
-  ADMIN
-  EMPLOYEE
+model Activity {
+  id          String        @id
+  name        String
+  zoneId      String
+  componentId String
+  projectId   String
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime
+  component   Component     @relation(fields: [componentId], references: [id], onDelete: Cascade)
+  project     Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  zone        Zone          @relation(fields: [zoneId], references: [id], onDelete: Cascade)
+  timeEntries TimeEntry[]
+
+  @@map("activities")
 }
 
-enum UserStatus {
-  PENDING
-  ACTIVE
-  DISABLED
+model Component {
+  id                String              @id
+  code              String              @unique
+  name              String
+  category          String
+  createdAt         DateTime            @default(now())
+  activities        Activity[]
+  projectComponents ProjectComponent[]
+
+  @@map("components")
 }
 
-enum TaskStatus {
-  ACTIVE
-  INACTIVE
+model ProjectComponent {
+  id          String    @id
+  projectId   String
+  componentId String
+  createdAt   DateTime  @default(now())
+  component   Component @relation(fields: [componentId], references: [id], onDelete: Cascade)
+  project     Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, componentId])
+  @@map("project_components")
+}
+
+model ProjectMember {
+  id        String   @id
+  projectId String
+  userId    String
+  createdAt DateTime @default(now())
+  role      String?
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, userId])
+  @@map("project_members")
+}
+
+model Project {
+  id                String              @id
+  name              String
+  date              DateTime            @db.Date
+  status            ProjectStatus       @default(DRAFT)
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime
+  activities        Activity[]
+  projectComponents ProjectComponent[]
+  members           ProjectMember[]
+  timeEntries       TimeEntry[]
+  zones             Zone[]
+
+  @@map("projects")
+}
+
+model Task {
+  id          String      @id
+  name        String      @unique
+  status      TaskStatus  @default(ACTIVE)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime
+  timeEntries TimeEntry[]
+
+  @@map("tasks")
+}
+
+model TimeEntry {
+  id                String    @id
+  userId            String
+  taskId            String
+  date              DateTime  @db.Date
+  hours             Decimal   @db.Decimal(4, 2)
+  startTime         String?
+  endTime           String?
+  comment           String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime
+  projectId         String?
+  activityId        String?
+  componentId       String?
+  wastedHoursReason String?
+  zoneId            String?
+  activity          Activity? @relation(fields: [activityId], references: [id])
+  project           Project?  @relation(fields: [projectId], references: [id])
+  task              Task      @relation(fields: [taskId], references: [id])
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("time_entries")
+}
+
+model User {
+  id              String          @id
+  name            String
+  email           String          @unique
+  passwordHash    String?
+  role            Role            @default(EMPLOYEE)
+  status          UserStatus      @default(PENDING)
+  inviteToken     String?         @unique
+  inviteExpiry    DateTime?
+  resetToken      String?         @unique
+  resetExpiry     DateTime?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime
+  jobTitle        String?
+  projectMembers  ProjectMember[]
+  timeEntries     TimeEntry[]
+
+  @@map("users")
+}
+
+model Zone {
+  id         String     @id
+  name       String
+  projectId  String
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime
+  activities Activity[]
+  project    Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@map("zones")
 }
 
 enum ProjectStatus {
@@ -28,145 +148,18 @@ enum ProjectStatus {
   PUBLISHED
 }
 
-model User {
-  id            String     @id @default(cuid())
-  name          String
-  email         String     @unique
-  passwordHash  String?
-  role          Role       @default(EMPLOYEE)
-  jobTitle      String?
-  status        UserStatus @default(PENDING)
-  inviteToken   String?    @unique
-  inviteExpiry  DateTime?
-  resetToken    String?    @unique
-  resetExpiry   DateTime?
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
-
-  timeEntries        TimeEntry[]
-  projectMemberships ProjectMember[]
-
-  @@map("users")
+enum Role {
+  ADMIN
+  EMPLOYEE
 }
 
-model Task {
-  id        String     @id @default(cuid())
-  name      String     @unique
-  status    TaskStatus @default(ACTIVE)
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-
-  timeEntries TimeEntry[]
-
-  @@map("tasks")
+enum TaskStatus {
+  ACTIVE
+  INACTIVE
 }
 
-model TimeEntry {
-  id                String   @id @default(cuid())
-  userId            String
-  taskId            String
-  projectId         String?
-  zoneId            String?
-  componentId       String?
-  activityId        String?
-  wastedHoursReason String?
-  date              DateTime @db.Date
-  hours             Decimal  @db.Decimal(4, 2)
-  comment           String?
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-
-  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  task     Task      @relation(fields: [taskId], references: [id], onDelete: Restrict)
-  project  Project?  @relation(fields: [projectId], references: [id], onDelete: SetNull)
-  activity Activity? @relation(fields: [activityId], references: [id], onDelete: SetNull)
-
-  @@map("time_entries")
-}
-
-model Project {
-  id          String        @id @default(cuid())
-  name        String
-  date        DateTime      @db.Date
-  status      ProjectStatus @default(DRAFT)
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-
-  timeEntries       TimeEntry[]
-  members           ProjectMember[]
-  zones             Zone[]
-  projectComponents ProjectComponent[]
-  activities        Activity[]
-
-  @@map("projects")
-}
-
-model ProjectMember {
-  id        String   @id @default(cuid())
-  projectId String
-  userId    String
-  role      String?
-  createdAt DateTime @default(now())
-
-  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([projectId, userId])
-  @@map("project_members")
-}
-
-model Zone {
-  id        String   @id @default(cuid())
-  name      String
-  projectId String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  project    Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  activities Activity[]
-
-  @@map("zones")
-}
-
-model Component {
-  id        String   @id @default(cuid())
-  code      String   @unique
-  name      String
-  category  String
-  createdAt DateTime @default(now())
-
-  projectComponents ProjectComponent[]
-  activities        Activity[]
-
-  @@map("components")
-}
-
-model ProjectComponent {
-  id          String   @id @default(cuid())
-  projectId   String
-  componentId String
-  createdAt   DateTime @default(now())
-
-  project   Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  component Component @relation(fields: [componentId], references: [id], onDelete: Cascade)
-
-  @@unique([projectId, componentId])
-  @@map("project_components")
-}
-
-model Activity {
-  id          String   @id @default(cuid())
-  name        String
-  zoneId      String
-  componentId String
-  projectId   String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  zone        Zone      @relation(fields: [zoneId], references: [id], onDelete: Cascade)
-  component   Component @relation(fields: [componentId], references: [id], onDelete: Cascade)
-  project     Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  timeEntries TimeEntry[]
-
-  @@map("activities")
+enum UserStatus {
+  PENDING
+  ACTIVE
+  DISABLED
 }
