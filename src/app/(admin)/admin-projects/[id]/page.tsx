@@ -302,16 +302,12 @@ useEffect(() => {
               </div>
 
               <div className="flex-1 min-w-0">
-                <select
-                  className="w-full appearance-none border border-gray-200 rounded-full px-4 py-2 text-sm bg-gray-50 outline-none focus:border-primary cursor-pointer"
+                <input
+                  className="w-full border border-gray-200 rounded-full px-4 py-2 text-sm bg-gray-50 outline-none focus:border-primary"
+                  placeholder="type activity"
                   value={row.activityName}
                   onChange={e => updateRow(idx, 'activityName', e.target.value)}
-                >
-                  <option value="">select activity</option>
-                  <option value="Supervisor">Supervisor</option>
-                  <option value="Worker">Worker</option>
-                  <option value="Manager">Manager</option>
-                </select>
+                />
               </div>
 
               <div className="w-16 shrink-0 flex items-center justify-center gap-3">

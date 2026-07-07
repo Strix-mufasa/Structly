@@ -286,7 +286,7 @@ export default function ProjectsPage() {
                       </div>
 
                       {/* Activity as pill/dropdown */}
-                      <div className="flex-1 min-w-0">
+                      {/* <div className="flex-1 min-w-0">
                         <select
                           className="w-full appearance-none border border-gray-200 rounded-full px-4 py-2 text-sm bg-gray-50 outline-none focus:border-primary cursor-pointer"
                           value={row.activityName}
@@ -297,7 +297,15 @@ export default function ProjectsPage() {
                           <option value="Worker">Worker</option>
                           <option value="Manager">Manager</option>
                         </select>
-                      </div>
+                      </div> */}
+                      <div className="flex-1 min-w-0">
+                      <input
+                        className="w-full border border-gray-200 rounded-full px-4 py-2 text-sm bg-gray-50 outline-none focus:border-primary"
+                        placeholder="type activity"
+                        value={row.activityName}
+                        onChange={e => updateRow(idx, 'activityName', e.target.value)}
+                      />
+                    </div>
 
                       {/* Edit/Delete icons — floating outside to the right */}
                       {/* <div className="absolute -right-10 top-1/2 -translate-y-1/2 flex flex-col items-center gap-2">
