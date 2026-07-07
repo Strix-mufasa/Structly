@@ -165,7 +165,7 @@ async function main() {
     await prisma.component.upsert({
       where: { code: component.code },
       update: {},
-      create: { id: crypto.randomUUID(), updatedAt: new Date(), ...component },
+      create: { id: crypto.randomUUID(), ...component },
     })
   }
 console.log('✅ Components seeded!')
