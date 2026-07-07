@@ -8,13 +8,13 @@ datasource db {
 }
 
 model Activity {
-  id          String        @id
+  id          String        @id @default(cuid())
   name        String
   zoneId      String
   componentId String
   projectId   String
   createdAt   DateTime      @default(now())
-  updatedAt   DateTime
+  updatedAt   DateTime      @updatedAt
   component   Component     @relation(fields: [componentId], references: [id], onDelete: Cascade)
   project     Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
   zone        Zone          @relation(fields: [zoneId], references: [id], onDelete: Cascade)
@@ -24,7 +24,7 @@ model Activity {
 }
 
 model Component {
-  id                String              @id
+  id                String              @id @default(cuid())
   code              String              @unique
   name              String
   category          String
@@ -36,7 +36,7 @@ model Component {
 }
 
 model ProjectComponent {
-  id          String    @id
+  id          String    @id @default(cuid())
   projectId   String
   componentId String
   createdAt   DateTime  @default(now())
@@ -48,7 +48,7 @@ model ProjectComponent {
 }
 
 model ProjectMember {
-  id        String   @id
+  id        String   @id @default(cuid())
   projectId String
   userId    String
   createdAt DateTime @default(now())
@@ -61,12 +61,12 @@ model ProjectMember {
 }
 
 model Project {
-  id                String              @id
+  id                String              @id @default(cuid())
   name              String
   date              DateTime            @db.Date
   status            ProjectStatus       @default(DRAFT)
   createdAt         DateTime            @default(now())
-  updatedAt         DateTime
+  updatedAt         DateTime            @updatedAt
   activities        Activity[]
   projectComponents ProjectComponent[]
   members           ProjectMember[]
@@ -77,18 +77,18 @@ model Project {
 }
 
 model Task {
-  id          String      @id
+  id          String      @id @default(cuid())
   name        String      @unique
   status      TaskStatus  @default(ACTIVE)
   createdAt   DateTime    @default(now())
-  updatedAt   DateTime
+  updatedAt   DateTime    @updatedAt
   timeEntries TimeEntry[]
 
   @@map("tasks")
 }
 
 model TimeEntry {
-  id                String    @id
+  id                String    @id @default(cuid())
   userId            String
   taskId            String
   date              DateTime  @db.Date
@@ -97,7 +97,7 @@ model TimeEntry {
   endTime           String?
   comment           String?
   createdAt         DateTime  @default(now())
-  updatedAt         DateTime
+  updatedAt         DateTime  @updatedAt
   projectId         String?
   activityId        String?
   componentId       String?
@@ -112,7 +112,7 @@ model TimeEntry {
 }
 
 model User {
-  id              String          @id
+  id              String          @id @default(cuid())
   name            String
   email           String          @unique
   passwordHash    String?
@@ -123,7 +123,7 @@ model User {
   resetToken      String?         @unique
   resetExpiry     DateTime?
   createdAt       DateTime        @default(now())
-  updatedAt       DateTime
+  updatedAt       DateTime        @updatedAt
   jobTitle        String?
   projectMembers  ProjectMember[]
   timeEntries     TimeEntry[]
@@ -132,11 +132,11 @@ model User {
 }
 
 model Zone {
-  id         String     @id
+  id         String     @id @default(cuid())
   name       String
   projectId  String
   createdAt  DateTime   @default(now())
-  updatedAt  DateTime
+  updatedAt  DateTime   @updatedAt
   activities Activity[]
   project    Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
