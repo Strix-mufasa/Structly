@@ -12,6 +12,8 @@ async function main() {
     where: { email: 'admin@structly.com' },
     update: {},
     create: {
+      id: crypto.randomUUID(),
+      updatedAt: new Date(),
       name: 'Admin User',
       email: 'admin@structly.com',
       passwordHash: adminHash,
@@ -26,6 +28,8 @@ async function main() {
     where: { email: 'anna@structly.com' },
     update: {},
     create: {
+      id: crypto.randomUUID(),
+      updatedAt: new Date(),
       name: 'Anna Lindström',
       email: 'anna@structly.com',
       passwordHash: empHash,
@@ -50,7 +54,7 @@ async function main() {
     await prisma.task.upsert({
       where: { name },
       update: {},
-      create: { name, status: TaskStatus.ACTIVE },
+      create: { id: crypto.randomUUID(), updatedAt: new Date(), name, status: TaskStatus.ACTIVE },
     })
   }
 // Seed components
@@ -161,7 +165,7 @@ async function main() {
     await prisma.component.upsert({
       where: { code: component.code },
       update: {},
-      create: component,
+      create: { id: crypto.randomUUID(), updatedAt: new Date(), ...component },
     })
   }
 console.log('✅ Components seeded!')
