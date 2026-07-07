@@ -153,12 +153,11 @@ export default function ProjectDetailPage() {
   const [editingRowIdx, setEditingRowIdx] = useState<number | null>(null)
   const [tempComponentIds, setTempComponentIds] = useState<string[]>([])
 
-  useEffect(() => {
-    fetch(`/api/admin/projects/${id}`)
+useEffect(() => {
+    fetch(`/api/admin/projects/${id}`, { cache: 'no-store' })
       .then(r => r.json())
       .then(d => {
         setProject(d)
-        // Existing activities ko editable rows mein convert karo
         const zoneMap = new Map<string, ActivityRow>()
         d.activities?.forEach((a: any) => {
           const zoneName = a.zone?.name || ''
@@ -171,7 +170,7 @@ export default function ProjectDetailPage() {
         setActivityRows(rows.length > 0 ? rows : [{ zone: '', componentIds: [], activityName: '' }])
         setLoading(false)
       })
-    fetch('/api/admin/components').then(r => r.json()).then(d => setComponents(d))
+    fetch('/api/admin/components', { cache: 'no-store' }).then(r => r.json()).then(d => setComponents(d))
   }, [id])
 
   const categoryRows = Array.from({ length: 10 }, (_, row) => {
