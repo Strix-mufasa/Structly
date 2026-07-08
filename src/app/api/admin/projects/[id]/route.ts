@@ -32,7 +32,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   if (!session || session.user.role !== 'ADMIN') return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   try {
-    const { status, activityRows } = await req.json()
+    const { status, activityRows, memberUserIds } = await req.json()
 
     const existing = await prisma.project.findUnique({ where: { id } })
     if (!existing) return NextResponse.json({ error: 'Not found' }, { status: 404 })
@@ -42,43 +42,58 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
       data: { status: status || existing.status },
     })
 
-    await prisma.activity.deleteMany({ where: { projectId: id } })
-    await prisma.projectComponent.deleteMany({ where: { projectId: id } })
-    await prisma.zone.deleteMany({ where: { projectId: id } })
-
-    const rows = Array.isArray(activityRows) ? activityRows : []
-
-    for (const row of rows) {
-      const ids: string[] = Array.isArray(row.componentIds) ? row.componentIds : []
-
-      let createdZone = null
-      if (row.zone) {
-        createdZone = await prisma.zone.create({
-          data: { id: crypto.randomUUID(), name: row.zone, projectId: id },
-        })
-      }
-
-      if (ids.length > 0) {
-        await prisma.projectComponent.createMany({
-          data: ids.map((componentId: string) => ({
+    // Members update karo (agar bheje gaye hain)
+    if (Array.isArray(memberUserIds)) {
+      await prisma.projectMember.deleteMany({ where: { projectId: id } })
+      if (memberUserIds.length > 0) {
+        await prisma.projectMember.createMany({
+          data: memberUserIds.map((userId: string) => ({
             id: crypto.randomUUID(),
             projectId: id,
-            componentId,
+            userId,
           })),
-          skipDuplicates: true,
         })
       }
+    }
 
-      if (row.activityName && createdZone && ids.length > 0) {
-        await prisma.activity.createMany({
-          data: ids.map((componentId: string) => ({
-            id: crypto.randomUUID(),
-            name: row.activityName,
-            zoneId: createdZone!.id,
-            componentId,
-            projectId: id,
-          })),
-        })
+    // Activities update karo (agar bheji gayi hain)
+    if (Array.isArray(activityRows)) {
+      await prisma.activity.deleteMany({ where: { projectId: id } })
+      await prisma.projectComponent.deleteMany({ where: { projectId: id } })
+      await prisma.zone.deleteMany({ where: { projectId: id } })
+
+      for (const row of activityRows) {
+        const ids: string[] = Array.isArray(row.componentIds) ? row.componentIds : []
+
+        let createdZone = null
+        if (row.zone) {
+          createdZone = await prisma.zone.create({
+            data: { id: crypto.randomUUID(), name: row.zone, projectId: id },
+          })
+        }
+
+        if (ids.length > 0) {
+          await prisma.projectComponent.createMany({
+            data: ids.map((componentId: string) => ({
+              id: crypto.randomUUID(),
+              projectId: id,
+              componentId,
+            })),
+            skipDuplicates: true,
+          })
+        }
+
+        if (row.activityName && createdZone && ids.length > 0) {
+          await prisma.activity.createMany({
+            data: ids.map((componentId: string) => ({
+              id: crypto.randomUUID(),
+              name: row.activityName,
+              zoneId: createdZone!.id,
+              componentId,
+              projectId: id,
+            })),
+          })
+        }
       }
     }
 
