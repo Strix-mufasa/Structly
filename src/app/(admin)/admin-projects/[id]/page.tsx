@@ -180,16 +180,16 @@ export default function ProjectDetailPage() {
                 onChange={e => updateRow(idx, 'zone', e.target.value)}
               />
 
-              <div className="flex-1 min-w-0 flex items-center gap-2">
+              <div className="flex-1 min-w-0 relative">
                 <input
                   readOnly
-                  className="flex-1 min-w-0 border border-gray-200 rounded-lg px-3 py-2 text-sm cursor-pointer truncate outline-none"
+                  className="w-full border border-gray-200 rounded-lg pl-3 pr-16 py-2 text-sm cursor-pointer truncate outline-none"
                   placeholder="select component"
                   value={row.componentIds.length > 0 ? components.filter(c => row.componentIds.includes(c.id)).map(c => c.name).join(', ') : ''}
                   onClick={() => openComponentPicker(idx)}
                 />
                 <button type="button" onClick={() => openComponentPicker(idx)}
-                  className="shrink-0 bg-primary text-white text-xs px-3 py-1.5 rounded-full font-medium hover:bg-primary/90">
+                  className="absolute right-1.5 top-1/2 -translate-y-1/2 shrink-0 bg-primary text-white text-xs px-3 py-1 rounded-full font-medium hover:bg-primary/90">
                   Add +
                 </button>
               </div>
