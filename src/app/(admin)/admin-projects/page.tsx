@@ -228,8 +228,8 @@ export default function ProjectsPage() {
 
           {/* STEP 2 — Figma exact match */}
           {step === 2 && (
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-5xl mx-4 overflow-visible flex flex-col max-h-[100vh] relative">
-              <div className="p-8 overflow-y-auto overflow-x-visible flex-1 space-y-8">
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-5xl mx-4 flex flex-col relative min-h-[520px] justify-between">
+              <div className="p-8 space-y-8">
 
                 {/* Project header pill */}
                 <div className="flex items-center justify-between border border-gray-200 rounded-full px-5 py-3 bg-white">
@@ -321,8 +321,9 @@ export default function ProjectsPage() {
                 </div>
               </div>
 
-              {/* Footer: Publish/Draft + logo */}
-              <div className="px-8 py-6 flex items-center justify-between border-t border-gray-100">
+            
+          {/* Footer: Publish/Draft + logo */}
+              <div className="px-8 py-6 flex items-center justify-center relative border-t border-gray-100">
                 <div className="flex items-center gap-3">
                   <button onClick={() => handlePublish('PUBLISHED')}
                     className="bg-primary text-white text-sm px-8 py-2 rounded-lg font-medium hover:bg-primary/90 transition-colors">
@@ -333,7 +334,7 @@ export default function ProjectsPage() {
                     Draft
                   </button>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center gap-2 pr-8">
                   <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
                     <Building2 className="h-4 w-4 text-white" />
                   </div>
@@ -342,7 +343,6 @@ export default function ProjectsPage() {
               </div>
             </div>
           )}
-
           {/* Component Picker */}
           {showComponentModal && (
             <div className="fixed inset-0 bg-background z-[60] flex flex-col">

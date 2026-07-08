@@ -56,7 +56,7 @@ export default function CreateUserPage() {
     }
 
     toast(`${form.name} invited successfully!`, 'success')
-    router.push('/admin/users')
+    router.push('/users')
   }
 
   return (

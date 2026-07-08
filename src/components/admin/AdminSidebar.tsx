@@ -1,7 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, Users, ListTodo, Clock, Folder, LogOut, Globe } from 'lucide-react'
+import { LayoutDashboard, Users, Clock, Folder, LogOut, Globe } from 'lucide-react'
 import { signOut } from 'next-auth/react'
 import { cn } from '@/lib/utils'
 import { Avatar } from '@/components/shared'
@@ -15,7 +15,7 @@ export default function AdminSidebar({ user }: { user: { name: string; email: st
     { href: '/admin', label: t.adminDashboard, icon: LayoutDashboard },
     { href: '/users', label: t.adminUsers, icon: Users },
     { href: '/admin-projects', label: t.adminProjects, icon: Folder },
-    { href: '/tasks', label: t.adminTasks, icon: ListTodo },
+    // { href: '/tasks', label: t.adminTasks, icon: ListTodo },
     { href: '/entries', label: t.adminTimeEntries, icon: Clock },
   ]
 
