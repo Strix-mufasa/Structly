@@ -6,16 +6,26 @@ import { signOut } from 'next-auth/react'
 import { cn } from '@/lib/utils'
 import { Avatar } from '@/components/shared'
 import { useLang } from '@/lib/LanguageContext'
+import { Lang } from '@/lib/translations'
+
+const languageOptions: { value: Lang; label: string }[] = [
+  { value: 'en', label: 'English' },
+  { value: 'sv', label: 'Svenska' },
+  { value: 'et', label: 'Eesti' },
+  { value: 'lv', label: 'Latviešu' },
+  { value: 'pl', label: 'Polski' },
+  { value: 'es', label: 'Español' },
+  { value: 'uk', label: 'Українська' },
+]
 
 export default function AdminSidebar({ user }: { user: { name: string; email: string } }) {
   const pathname = usePathname()
-  const { t, lang, toggleLang } = useLang()
+  const { t, lang, setLang } = useLang()
 
   const navItems = [
     { href: '/admin', label: t.adminDashboard, icon: LayoutDashboard },
     { href: '/users', label: t.adminUsers, icon: Users },
     { href: '/admin-projects', label: t.adminProjects, icon: Folder },
-    // { href: '/tasks', label: t.adminTasks, icon: ListTodo },
     { href: '/entries', label: t.adminTimeEntries, icon: Clock },
   ]
 
@@ -32,7 +42,6 @@ export default function AdminSidebar({ user }: { user: { name: string; email: st
       </div>
       <nav className="flex-1 px-3 py-4 space-y-1">
         {navItems.map(({ href, label, icon: Icon }) => {
-          // const active = pathname.startsWith(href)
           const active = pathname === href || pathname.startsWith(href + '/')
           return (
             <Link key={href} href={href}
@@ -54,10 +63,20 @@ export default function AdminSidebar({ user }: { user: { name: string; email: st
             <p className="text-xs text-muted-foreground truncate">{user.email}</p>
           </div>
         </div>
-        <button onClick={toggleLang}
-          className="flex w-full items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors">
-          <Globe className="h-4 w-4" /> {lang === 'en' ? 'Svenska' : 'English'}
-        </button>
+
+        <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors">
+          <Globe className="h-4 w-4 shrink-0" />
+          <select
+            value={lang}
+            onChange={(e) => setLang(e.target.value as Lang)}
+            className="flex-1 bg-transparent outline-none cursor-pointer text-sm"
+          >
+            {languageOptions.map(opt => (
+              <option key={opt.value} value={opt.value}>{opt.label}</option>
+            ))}
+          </select>
+        </div>
+
         <button onClick={() => signOut({ callbackUrl: '/login' })}
           className="flex w-full items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors">
           <LogOut className="h-4 w-4" /> {t.signOut}
