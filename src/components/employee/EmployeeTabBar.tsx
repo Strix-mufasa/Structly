@@ -5,10 +5,21 @@ import { Home, PlusCircle, CalendarDays, Folder, LogOut } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { signOut } from 'next-auth/react'
 import { useLang } from '@/lib/LanguageContext'
+import { Lang } from '@/lib/translations'
+
+const languageOptions: { value: Lang; label: string }[] = [
+  { value: 'en', label: 'EN' },
+  { value: 'sv', label: 'SV' },
+  { value: 'et', label: 'ET' },
+  { value: 'lv', label: 'LV' },
+  { value: 'pl', label: 'PL' },
+  { value: 'es', label: 'ES' },
+  { value: 'uk', label: 'UK' },
+]
 
 export default function EmployeeTabBar() {
   const pathname = usePathname()
-  const { lang, t, toggleLang } = useLang()
+  const { lang, t, setLang } = useLang()
 
   const tabs = [
     { href: '/dashboard', label: t.home, icon: Home },
@@ -33,11 +44,18 @@ export default function EmployeeTabBar() {
             </Link>
           )
         })}
-        <button onClick={toggleLang}
-          className="flex flex-1 flex-col items-center justify-center gap-1 py-3 text-[11px] font-medium text-muted-foreground hover:text-foreground transition-colors">
+        <label className="flex flex-1 flex-col items-center justify-center gap-1 py-3 text-[11px] font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
           <span className="text-base">🌐</span>
-          {lang === 'en' ? 'SV' : 'EN'}
-        </button>
+          <select
+            value={lang}
+            onChange={(e) => setLang(e.target.value as Lang)}
+            className="bg-transparent outline-none text-[11px] text-center cursor-pointer w-10"
+          >
+            {languageOptions.map(opt => (
+              <option key={opt.value} value={opt.value}>{opt.label}</option>
+            ))}
+          </select>
+        </label>
         <button
           onClick={() => signOut({ callbackUrl: '/login' })}
           className="flex flex-1 flex-col items-center justify-center gap-1 py-3 text-[11px] font-medium text-muted-foreground hover:text-foreground transition-colors"
