@@ -14,14 +14,14 @@ interface Props {
 }
 
 const jobTitleOptions = [
-  { value: 'siteManager', label: 'Site Manager' },
-  { value: 'foreman', label: 'Foreman / Work Supervisor' },
-  { value: 'projectManager', label: 'Project Manager' },
-  { value: 'designManager', label: 'Design Manager / Engineering Lead' },
-  { value: 'purchaser', label: 'Purchaser / Procurement Officer' },
-  { value: 'financeManager', label: 'Finance Manager / CFO' },
-  { value: 'byggYA', label: 'Construction Safety Officer (YA)' },
-  { value: 'ueYA', label: 'Subcontractor Safety Officer (YA)' },
+  { value: 'Site Manager', label: 'Site Manager' },
+  { value: 'Foreman / Work Supervisor', label: 'Foreman / Work Supervisor' },
+  { value: 'Project Manager', label: 'Project Manager' },
+  { value: 'Design Manager / Engineering Lead', label: 'Design Manager / Engineering Lead' },
+  { value: 'Purchaser / Procurement Officer', label: 'Purchaser / Procurement Officer' },
+  { value: 'Finance Manager / CFO', label: 'Finance Manager / CFO' },
+  { value: 'Construction Safety Officer (YA)', label: 'Construction Safety Officer (YA)' },
+  { value: 'Subcontractor Safety Officer (YA)', label: 'Subcontractor Safety Officer (YA)' },
 ]
 
 export default function EditUserForm({ user }: Props) {
